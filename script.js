@@ -1,38 +1,62 @@
-let map = L.map('map').setView([-25, 135], 4);
+// Initialize Leaflet map
+const map = L.map('map').setView([-33.8688, 151.2093], 8); // Centered on Sydney, NSW
 
+// Add OpenStreetMap tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 16,
-  attribution: '© OpenStreetMap'
+    attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-let geojsonLayer;
-const colorPool = ['red', 'blue', 'green', 'purple', 'orange', 'brown'];
+// Global variable to hold GeoJSON layer
+let suburbLayer;
 
-document.getElementById('searchBtn').addEventListener('click', () => {
-  const postcodes = document.getElementById('postcodeInput').value
-    .split(',')
-    .map(p => p.trim());
-  const sameColor = document.getElementById('sameColor').checked;
-
-  if (geojsonLayer) {
-    map.removeLayer(geojsonLayer);
-  }
-
-  fetch('data/nsw-suburbs.geojson')
+// Load NSW suburbs GeoJSON from main folder
+fetch('nsw-suburbs.geojson')
     .then(response => response.json())
-    .then(data => {
-        L.geoJSON(data, {
+    .then(geojsonData => {
+        // Store original GeoJSON data
+        suburbLayer = L.geoJSON(geojsonData, {
             onEachFeature: function (feature, layer) {
-                if (feature.properties && feature.properties.SA2_NAME16) {
-                    layer.bindPopup(feature.properties.SA2_NAME16);
-                }
+                const name = feature.properties.SA2_NAME16 || "Unknown";
+                layer.bindPopup(`<strong>${name}</strong>`);
+                layer.bindTooltip(name, { permanent: false, direction: 'top' });
+            },
+            style: {
+                color: '#555',
+                weight: 1,
+                fillOpacity: 0.2
             }
         }).addTo(map);
+    })
+    .catch(error => {
+        console.error('Failed to load suburb data:', error);
     });
 
-      if (matched.length) {
-        let group = new L.featureGroup(matched);
-        map.fitBounds(group.getBounds());
-      }
+// Handle postcode search
+function searchPostcodes() {
+    const input = document.getElementById('postcode-input').value;
+    const postcodes = input.split(',').map(code => code.trim());
+
+    if (!suburbLayer) return;
+
+    // Clear existing highlights
+    suburbLayer.eachLayer(layer => {
+        suburbLayer.resetStyle(layer);
     });
-});
+
+    // Highlight matching suburbs
+    suburbLayer.eachLayer(layer => {
+        const suburbName = layer.feature.properties.SA2_NAME16 || '';
+        const matches = postcodes.some(code =>
+            suburbName.toLowerCase().includes(code.toLowerCase())
+        );
+
+        if (matches) {
+            layer.setStyle({
+                color: 'blue',
+                fillColor: 'orange',
+                fillOpacity: 0.6
+            });
+            layer.openPopup();
+        }
+    });
+}
