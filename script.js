@@ -18,30 +18,17 @@ document.getElementById('searchBtn').addEventListener('click', () => {
     map.removeLayer(geojsonLayer);
   }
 
-  fetch('aus-postcodes.geojson')
-    .then(res => res.json())
+  fetch('data/nsw-suburbs.geojson')
+    .then(response => response.json())
     .then(data => {
-      let matched = [];
-      geojsonLayer = L.geoJSON(data, {
-        style: function (feature) {
-          if (postcodes.includes(feature.properties.postcode)) {
-            let color = sameColor
-              ? 'blue'
-              : colorPool[postcodes.indexOf(feature.properties.postcode) % colorPool.length];
-            return { color, weight: 2, fillOpacity: 0.4 };
-          }
-          return { opacity: 0 };
-        },
-        onEachFeature: function (feature, layer) {
-          if (postcodes.includes(feature.properties.postcode)) {
-            matched.push(layer);
-            layer.bindTooltip(
-              `${feature.properties.suburb} (${feature.properties.postcode})`,
-              { permanent: false }
-            );
-          }
-        }
-      }).addTo(map);
+        L.geoJSON(data, {
+            onEachFeature: function (feature, layer) {
+                if (feature.properties && feature.properties.SA2_NAME16) {
+                    layer.bindPopup(feature.properties.SA2_NAME16);
+                }
+            }
+        }).addTo(map);
+    });
 
       if (matched.length) {
         let group = new L.featureGroup(matched);
