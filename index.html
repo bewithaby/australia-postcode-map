@@ -5,23 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Australia Postcode Map</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 </head>
 <body>
+  <h1>Australia Postcode Map</h1>
+
   <div id="controls">
-    <h1>Australian Postcode Map</h1>
-    <input type="text" id="postcodeInput" placeholder="Enter postcodes (e.g. 2000,3000)" list="postcodeList" />
-    <datalist id="postcodeList"></datalist>
-    <br/>
-    <label><input type="radio" name="colorMode" value="same" checked /> Same Color</label>
-    <label><input type="radio" name="colorMode" value="different" /> Different Colors</label>
-    <br/>
-    <button onclick="searchPostcodes()">Search</button>
-    <button onclick="downloadCSV()">Export CSV</button>
-    <div id="legend"></div>
+    <label for="postcodes">Enter postcodes (comma-separated):</label><br/>
+    <input type="text" id="postcodes" placeholder="e.g. 2000,3000" />
+    <br/><br/>
+    <label><input type="checkbox" id="sameColor" /> Use same color for all</label><br/><br/>
+    <button id="searchBtn">Search</button>
   </div>
-  <div id="map"></div>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <div id="map" style="height: 600px; margin-top: 20px;"></div>
+
+  <!-- Leaflet JS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha512-sA+ePsCg/WuXB5nHlbYwFg+5RJqMG+1uEo2qMR6kGciVhXYx0xVzgi+gctmTnTPi5RUoYhvnWyTA+1U0UuZfWg=="
+    crossorigin=""
+  />
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha512-o8U1g+bsNH+v+leVToAz9kae9IsKCBv0cGBpt9IS2S1Jw2/f8KMbWyyYzNcCcmMgW8ce7VzSyjxrLrXvP5rdqA=="
+    crossorigin=""
+  ></script>
+
+  <!-- Load your script last, with defer -->
   <script src="script.js" defer></script>
 </body>
 </html>
